@@ -1,0 +1,84 @@
+filetype: "lpegrex"
+
+detect:
+    filename: "\\.(?:lpeg|lpegrex?|relabel)$"
+
+rules:
+    - identifier: "\\b[A-Za-z_][A-Za-z0-9_-]*\\b"
+    - constant: "%[A-Za-z_][A-Za-z0-9_-]*\\b"
+    - constant: "<[A-Za-z_][A-Za-z0-9_-]*>"
+    - type: "\\b[A-Za-z_][A-Za-z0-9_-]*(\\s*:\\s*[A-Za-z_][A-Za-z0-9_-]*)?\\s*<=="
+    - symbol.tag: "\\s*:\\s*[A-Za-z_][A-Za-z0-9_-]*\\s*<=="
+    - constant: "\\b[A-Z][A-Z_]*\\b"
+    - type: "\\b(?:[A-Z][a-z]+)+\\b"
+    - constant.number: "(?:\\+|\\-|\\b)\\d+"
+    - statement: "~>\\s*(?:tonil|tofalse|totrue|toemptytable|tonumber|tochar|toutf8char|foldleft|foldright|rfoldleft|rfoldright)"
+    - constant: "\\b(?:KEYWORD|TOKEN|NAME_SUFFIX|SKIP)\\b"
+    - constant.specialChar: "\\."
+
+    # See:
+    # * https://www.lua.org/manual/5.4/manual.html#6.4.1
+    # * https://www.inf.puc-rio.br/~roberto/lpeg/re.html (just after the quick-reference table / before the 'Functions' section)
+    # * https://github.com/edubart/lpegrex?tab=readme-ov-file#additional-features
+    - constant.specialChar: "%(?:[aAcCdDgGlLpPsSuUwWxX]|nl|ca|cb|ct|cn|cv|cf|cr|utf8|utf8seq|ascii|sp)\\b"
+
+    - symbol.brackets:
+        start: "\\["
+        end: "\\]"
+        rules:
+            - constant.string: "."
+            - error: "\\[|\\]"
+            - constant.specialChar: "\\."
+            - constant: "[0-9]\\-[0-9]"
+            - type: "[a-z]\\-[a-z]"
+            - preproc: "[A-Z]\\-[A-Z]"
+            - statement: "^\\^"
+            - constant: "%[A-Za-z_][A-Za-z0-9_-]*\\b"
+            - constant.specialChar: "%(?:[aAcCdDgGlLpPsSuUwWxX]|nl|ca|cb|ct|cn|cv|cf|cr|utf8|utf8seq|ascii|sp)\\b"
+
+    - error: "\\|"
+
+    - symbol.operator: "<\\-\\-?|<=="
+    - symbol.operator: "<\\-\\|"
+    - symbol.operator: ":|\\?|[\\-~]>|\\+|\\*|/|\\^|@|!"
+    - symbol.brackets: "=[A-Za-z_][A-Za-z0-9_-]*\\b"
+    - symbol.brackets: "\\(|\\)|\\[|\\]"
+    - symbol.brackets: "{|}"
+    - symbol.brackets: "{~|~}"
+    - symbol.brackets: "{\\||\\|}"
+    - symbol.brackets: "{:[A-Za-z_][A-Za-z0-9_-]*:|:}"
+
+    - constant.string:
+        start: "\""
+        end: "\""
+
+    - constant.string:
+        start: "'"
+        end: "'"
+
+    - statement: "\\$[A-Za-z_][A-Za-z0-9_-]*\\b"
+    - constant: "\\$(?:[0-9]+\\b|{})"
+    - constant.bool.true: "\\$true\\b"
+    - constant.bool.false: "\\$false\\b"
+    - constant.null: "\\$nil\\b"
+
+    - constant:
+        start: "\\$\""
+        end: "\""
+
+    - constant:
+        start: "\\$'"
+        end: "'"
+
+    - constant.string:
+        start: "`"
+        end: "`"
+        #rules:
+        #    - symbol: "[^a-zA-Z0-9_]+"
+        #    - statement: "[a-zA-Z_][a-zA-Z0-9_]*"
+
+    - comment:
+        start: "(?:^|\\s)\\-\\-"
+        end: "$"
+        rules:
+            - todo: "(?:TODO|NOTE|FIXME):?"
